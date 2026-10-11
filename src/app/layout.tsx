@@ -39,12 +39,14 @@ export const viewport: Viewport = {
 /**
  * Le thème est résolu côté serveur à partir du cookie. Aucun script bloquant,
  * aucun scintillement, aucune divergence d'hydratation.
+ * Sombre par défaut : le clair n'est appliqué que si le visiteur l'a choisi.
  */
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const theme = (await cookies()).get(THEME_COOKIE)?.value;
+  const dark = theme !== 'light';
 
   return (
-    <html lang="fr" className={[inter.variable, theme === 'dark' ? 'dark' : ''].join(' ').trim()}>
+    <html lang="fr" className={[inter.variable, dark ? 'dark' : ''].join(' ').trim()}>
       <body className="min-h-screen bg-canvas text-fg antialiased">{children}</body>
     </html>
   );
