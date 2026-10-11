@@ -1,0 +1,1 @@
+ALTER TYPE "public"."pallet_status" ADD VALUE 'cancelled';

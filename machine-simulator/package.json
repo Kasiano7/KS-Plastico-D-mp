@@ -1,0 +1,14 @@
+{
+  "name": "ks-plastico-machine-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Simulateur autonome de trois presses pour les démonstrations KS Plastico Demo.",
+  "scripts": {
+    "dev": "node --watch server.mjs",
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

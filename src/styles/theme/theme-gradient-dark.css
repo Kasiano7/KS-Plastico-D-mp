@@ -1,0 +1,66 @@
+/*
+ * Thème « Gradient Moderne sombre » — thème de référence KS Plastico Demo.
+ *
+ * Les valeurs sont scopées à `[data-theme='gradient-dark']` et non à `:root` :
+ * le thème descend par héritage sur le sous-arbre qui le porte, ce qui permet
+ * de faire cohabiter plusieurs thèmes (aperçu dans les paramètres, écran de
+ * démonstration…) et de ne pas perturber les écrans hérités de la phase 1.
+ *
+ * Pour ajouter « Bleu profond », « Émeraude », « Indigo », « Clair + sidebar
+ * bleu nuit » : dupliquer ce fichier, changer le sélecteur, ajuster les
+ * valeurs. Aucun composant n'est à modifier.
+ */
+
+[data-theme='gradient-dark'] {
+  color-scheme: dark;
+
+  /* ── Surfaces ─────────────────────────────────────────────────────────── */
+  --background: #000d1c;
+  --background-secondary: #011123;
+  --sidebar: #070b14;
+  --sidebar-hover: #101827;
+  --sidebar-active: #1d4ed8;
+  --card: #0b1120;
+  --card-hover: #111a2c;
+
+  /* ── Traits ───────────────────────────────────────────────────────────── */
+  --border: #18233a;
+  --border-light: #121b2d;
+
+  /* ── Texte ────────────────────────────────────────────────────────────── */
+  --text-primary: #e9eefb;
+  --text-secondary: #94a4c0;
+  --text-muted: #5d6c8a;
+
+  /* ── Marque ───────────────────────────────────────────────────────────── */
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+
+  /* ── Accents fonctionnels ─────────────────────────────────────────────── */
+  --accent-blue: #3b82f6;
+  --accent-cyan: #22d3ee;
+  --accent-purple: #8b5cf6;
+  --accent-orange: #f59e0b;
+  --accent-green: #22c55e;
+
+  /* ── Statuts ──────────────────────────────────────────────────────────── */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #38bdf8;
+
+  /* ── Élévation ────────────────────────────────────────────────────────── */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.35), 0 12px 28px -18px rgb(0 0 0 / 0.8);
+  --glow-primary: 0 0 0 1px rgb(59 130 246 / 0.18), 0 0 40px -12px rgb(59 130 246 / 0.55);
+
+  /* ── Dégradés de surface ──────────────────────────────────────────────── */
+  /* Très légers : ils donnent le relief du thème sans jamais devenir un effet. */
+  --gradient-card: linear-gradient(180deg, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0));
+  --gradient-sidebar: linear-gradient(180deg, #080d18 0%, #06090f 100%);
+  --gradient-ai: linear-gradient(
+    90deg,
+    rgb(59 130 246 / 0.18) 0%,
+    rgb(34 211 238 / 0.1) 45%,
+    rgb(139 92 246 / 0.18) 100%
+  );
+}

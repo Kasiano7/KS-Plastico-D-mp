@@ -1,0 +1,43 @@
+/*
+ * KS Plastico Demo — Utilitaires de surface.
+ * Uniquement ce que Tailwind ne sait pas exprimer proprement : dégradés de
+ * surface, halo de la barre IA, trame technique. Tout le reste passe par les
+ * jetons et les utilitaires standards.
+ */
+
+@layer utilities {
+  /* Surface de carte : fond plein + micro-dégradé qui donne le relief. */
+  .panel-surface {
+    background-color: var(--card);
+    background-image: var(--gradient-card);
+  }
+
+  .sidebar-surface {
+    background-color: var(--sidebar);
+    background-image: var(--gradient-sidebar);
+  }
+
+  /* Halo bleu-cyan-violet de la barre IA — l'élément central de l'interface. */
+  .ai-aura {
+    background-image: var(--gradient-ai);
+  }
+
+  /* Trame isométrique du bloc « Vue globale de l'usine ». */
+  .tech-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--border) 70%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--border) 70%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Barre de défilement discrète dans les panneaux denses. */
+  .scroll-slim {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  /* Chiffres alignés en colonne — indispensable sur un tableau de bord. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}

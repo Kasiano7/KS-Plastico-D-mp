@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Console de simulation de trois presses industrielles pour KS Plastico Demo." />
+    <title>KS Plastico Demo — Simulateur de presses</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div>
+            <p class="eyebrow">KS PLASTICO · LAB</p>
+            <h1>Simulateur de presses</h1>
+          </div>
+        </div>
+        <div class="connection" id="connection">
+          <span class="connection-dot" aria-hidden="true"></span>
+          <div>
+            <strong id="connection-label">Connexion…</strong>
+            <span id="connection-detail">Synchronisation avec KS Plastico Demo</span>
+          </div>
+          <label class="switch">
+            <input id="transmission-toggle" type="checkbox" checked />
+            <span aria-hidden="true"></span>
+            <b>Transmission</b>
+          </label>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <p class="eyebrow">BANC DE DÉMONSTRATION · 3 ÉQUIPEMENTS</p>
+          <h2>Pilotez l’usine.<br /><span>Provoquez l’imprévu.</span></h2>
+          <p class="hero-copy">
+            Les compteurs tournent côté serveur, même si cette page est fermée. Chaque panne est transmise à KS Plastico Demo et devient un arrêt, un incident et une alerte.
+          </p>
+        </div>
+        <div class="scenario-panel">
+          <p class="panel-label">Scénarios rapides</p>
+          <div class="scenario-grid">
+            <button data-scenario="all-running" class="scenario primary">Tout lancer</button>
+            <button data-scenario="incident-demo" class="scenario danger">Démo incident</button>
+            <button data-scenario="quality-drift" class="scenario">Dérive qualité</button>
+            <button data-scenario="reset" class="scenario ghost">Réinitialiser</button>
+          </div>
+          <p class="scenario-note" id="scenario-note">La “Démo incident” déclenche deux arrêts successifs en 14 secondes.</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="presses-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">LIGNE VIRTUELLE</p>
+            <h2 id="presses-title">Presses connectées</h2>
+          </div>
+          <p id="last-sync">En attente du premier relevé</p>
+        </div>
+        <div class="press-grid" id="press-grid" aria-live="polite"></div>
+      </section>
+
+      <footer>
+        <span>Passerelle simulée <b id="gateway-id">—</b></span>
+        <span>Destination <b id="api-url">—</b></span>
+      </footer>
+    </main>
+
+    <template id="press-template">
+      <article class="press-card">
+        <div class="press-card-head">
+          <div>
+            <span class="press-code"></span>
+            <h3 class="press-name"></h3>
+          </div>
+          <span class="status-pill"></span>
+        </div>
+        <div class="machine-visual" aria-hidden="true">
+          <span class="machine-column left"></span>
+          <span class="machine-column right"></span>
+          <span class="machine-beam"></span>
+          <span class="machine-bed"></span>
+          <span class="machine-light"></span>
+        </div>
+        <p class="reason"></p>
+        <label class="mold-field">
+          <span>Moule en place</span>
+          <select class="mold-select" aria-label="Moule monté sur la presse"></select>
+        </label>
+        <p class="production-order"></p>
+        <dl class="metrics">
+          <div><dt>Pièces</dt><dd class="parts"></dd></div>
+          <div><dt>Cadence</dt><dd class="rate"></dd></div>
+          <div><dt>Cycle</dt><dd class="cycle"></dd></div>
+          <div><dt>Rebuts</dt><dd class="rejects"></dd></div>
+          <div><dt>Temp.</dt><dd class="temperature"></dd></div>
+          <div><dt>Pression</dt><dd class="pressure"></dd></div>
+        </dl>
+        <div class="controls">
+          <button data-action="production" class="run">Production</button>
+          <button data-action="forced_stop" class="stop">Arrêt forcé</button>
+          <details>
+            <summary>Injecter une panne</summary>
+            <div class="fault-menu">
+              <button data-action="hydraulic_fault">Défaut hydraulique</button>
+              <button data-action="overheat">Surchauffe</button>
+              <button data-action="sensor_fault">Capteur moule</button>
+              <button data-action="maintenance">Maintenance</button>
+              <button data-action="idle">Remettre disponible</button>
+            </div>
+          </details>
+        </div>
+      </article>
+    </template>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

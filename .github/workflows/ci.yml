@@ -1,0 +1,39 @@
+name: CI
+
+# Filet de sécurité minimal (§ SECURITY.md « Reste à durcir ») : attrape en
+# quelques minutes ce qu'on a découvert la manière difficile — un
+# `next build` cassé publié directement en production. Aucune variable
+# d'environnement n'est nécessaire : aucune route n'est statiquement générée
+# à partir de la base (voir next.config.ts / la sortie de `next build`, tout
+# est en rendu dynamique ƒ), donc build et tests tournent sans DATABASE_URL
+# ni AUTH_SECRET — sur PGlite embarqué au pire, jamais sur une vraie base.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm test
+
+      - run: npm run build

@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Next.js and build outputs
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# Local databases and hosting metadata
+.data/
+.vercel/
+
+# Local assistant settings
+.claude/
+.codex/
+
+# Environment variables: keep only the safe template
+.env*
+!.env.example
+
+# Tests, logs and operating-system files
+coverage/
+*.log
+.DS_Store
+*.pem
+
+# Playwright (tests de bout en bout)
+/test-results/
+/playwright-report/
+/playwright/.cache/

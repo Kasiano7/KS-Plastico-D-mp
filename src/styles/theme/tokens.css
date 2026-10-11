@@ -1,0 +1,76 @@
+/*
+ * KS Plastico Demo — Contrat de jetons (design tokens)
+ * ───────────────────────────────────────────
+ * Ce fichier ne contient AUCUNE couleur : il déclare uniquement la
+ * correspondance « utilitaire Tailwind → variable CSS ». Les valeurs vivent
+ * dans les fichiers de thème (`theme-*.css`), scopés par `[data-theme]`.
+ *
+ * Conséquence : ajouter un thème = ajouter un fichier de valeurs, jamais
+ * toucher un composant. Aucune couleur ne doit être écrite en dur dans le JSX.
+ *
+ * `@theme inline` est essentiel ici : l'utilitaire généré référence la variable
+ * (`background-color: var(--card)`) au lieu de figer sa valeur. Le thème est
+ * donc résolu par héritage CSS, et un sous-arbre peut porter un thème différent
+ * du reste du document.
+ */
+
+/*
+ * Point de rupture propre au poste de pilotage : en dessous de 1400 px, la
+ * grille dense à quatre colonnes devient illisible (libellés tronqués). On
+ * bascule alors sur deux colonnes plutôt que de rétrécir la typographie.
+ *
+ * Déclaré dans un `@theme` classique (et en `rem`, comme les points de rupture
+ * natifs) : c'est ce qui permet à Tailwind de l'ordonner correctement parmi
+ * `sm`, `md`, `lg`… Un `@theme inline` le placerait avant `sm`, et `sm`
+ * l'emporterait alors sur les grands écrans.
+ */
+@theme {
+  --breakpoint-wide: 87.5rem;
+}
+
+@theme inline {
+  /* Surfaces */
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+
+  /* Traits — `edge` plutôt que `border` pour ne pas entrer en collision
+     avec le jeu de jetons historique (`--color-line`) encore utilisé par
+     les écrans de la phase 1. */
+  --color-edge: var(--border);
+  --color-edge-soft: var(--border-light);
+
+  /* Texte */
+  --color-ink: var(--text-primary);
+  --color-ink-muted: var(--text-secondary);
+  --color-ink-dim: var(--text-muted);
+
+  /* Marque */
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+
+  /* Accents fonctionnels — une teinte = un domaine métier */
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-green: var(--accent-green);
+
+  /* Statuts */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+
+  /* Rayons */
+  --radius-panel: 0.875rem;
+  --radius-chip: 0.5rem;
+
+  /* Élévation */
+  --shadow-panel: var(--shadow-card);
+  --shadow-glow: var(--glow-primary);
+}

@@ -1,0 +1,3 @@
+CREATE TYPE "public"."machine_document_category" AS ENUM('notice_constructeur', 'plan_electrique', 'fiche_reglage', 'rapport_intervention', 'certificat_conformite', 'autre');--> statement-breakpoint
+ALTER TABLE "machine_documents" ALTER COLUMN "category" SET DEFAULT 'autre'::"public"."machine_document_category";--> statement-breakpoint
+ALTER TABLE "machine_documents" ALTER COLUMN "category" SET DATA TYPE "public"."machine_document_category" USING "category"::"public"."machine_document_category";

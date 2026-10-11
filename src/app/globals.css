@@ -1,0 +1,361 @@
+@import 'tailwindcss';
+
+/*
+ * Design system KS Plastico Demo (thème « Gradient Moderne sombre ») — jetons, valeurs
+ * de thème et utilitaires de surface. C'est la référence pour tous les écrans
+ * à construire ; le bloc plus bas reste celui des écrans de la phase 1.
+ */
+@import '../styles/theme/tokens.css';
+@import '../styles/theme/theme-gradient-dark.css';
+@import '../styles/theme/theme-dashboard.css';
+@import '../styles/theme/utilities.css';
+
+/*
+ * KS Plastico Demo — Design system
+ * ───────────────────────
+ * Une seule identité visuelle, déclinée en thème clair et thème sombre.
+ * Les couleurs de statut ont TOUJOURS une signification métier :
+ *   normal 🟢 · info 🟡 · warning 🟠 · critical 🔴
+ * Aucune couleur décorative : si une teinte apparaît, elle informe.
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --canvas: #f4f6f8;
+  --canvas-subtle: #eceff3;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f8fAfc;
+  --overlay: rgb(15 23 32 / 0.35);
+
+  /* Traits */
+  --border: #e3e8ee;
+  --border-strong: #cfd7e0;
+  /*
+   * Séparateur de lignes de tableau : volontairement plus discret que
+   * `--border`. Vingt lignes séparées par un trait plein donnent une grille ;
+   * la lecture d'un tableau industriel se fait mieux avec un rythme suggéré.
+   */
+  --border-soft: color-mix(in srgb, var(--border) 55%, transparent);
+
+  /* Texte */
+  --fg: #0f1922;
+  --fg-muted: #55677a;
+  --fg-subtle: #8497a9;
+  --fg-inverse: #ffffff;
+
+  /* Bleu industriel (structure) et bleu électrique (accent) */
+  --navy: #0e2a47;
+  --navy-soft: #14375c;
+  --brand: #2563eb;
+  --brand-hover: #1d4ed8;
+  --brand-soft: #e8effd;
+  --brand-ring: rgb(37 99 235 / 0.35);
+
+  /* Statuts */
+  --normal: #0f9d6f;
+  --normal-soft: #e3f6ef;
+  --info: #b78103;
+  --info-soft: #fdf3dc;
+  --warning: #d9701a;
+  --warning-soft: #fdeee1;
+  --critical: #d13b3b;
+  --critical-soft: #fce9e9;
+
+  /* Élévation — volontairement discrète */
+  /*
+   * Échelle typographique — un pas de 1 px, décidée une fois.
+   *
+   * Sous le préfixe `--type-` et non `--text-` : dans Tailwind v4, le second
+   * redéfinit les utilitaires `text-sm`, `text-base`, `text-lg`… et rétrécit
+   * silencieusement tout le texte déjà écrit avec ces classes.
+   *
+   * Les 744 tailles écrites en valeur arbitraire dans les pages suivent déjà
+   * cette échelle, à seize exceptions désormais corrigées. Le problème n'était
+   * pas les valeurs mais le fait qu'aucune ne portait de nom, donc qu'aucune
+   * ne pouvait être changée d'un seul endroit. Tout nouvel écran s'écrit
+   * `text-[var(--type-base)]`.
+   */
+  --type-2xs: 0.625rem; /*   10px — étiquettes en capitales */
+  --type-xs: 0.6875rem; /*   11px — méta, unités */
+  --type-sm: 0.75rem; /*     12px — secondaire dense */
+  --type-base: 0.8125rem; /* 13px — texte courant de l'application */
+  --type-md: 0.875rem; /*    14px — texte confortable */
+  --type-lg: 0.9375rem; /*   15px — sous-titres */
+  --type-xl: 1.0625rem; /*   17px — titres de carte */
+  --type-2xl: 1.375rem; /*   22px — titres de page */
+  --type-3xl: 1.75rem; /*    28px — valeurs d'indicateur */
+
+  --shadow-xs: 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow-sm: 0 1px 3px rgb(16 24 40 / 0.06), 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow-md: 0 4px 12px rgb(16 24 40 / 0.07), 0 1px 3px rgb(16 24 40 / 0.04);
+  --shadow-lg: 0 16px 40px rgb(16 24 40 / 0.12);
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Bleu nuit mesuré sur le fond de la référence `Exemple UI/Machine.png`. */
+  --canvas: #000d1c;
+  --canvas-subtle: #011123;
+  --surface: #111a24;
+  --surface-raised: #16212d;
+  --surface-sunken: #0d141d;
+  --overlay: rgb(3 7 12 / 0.6);
+
+  --border: #1e2b39;
+  --border-strong: #2c3d4f;
+  --border-soft: color-mix(in srgb, var(--border) 65%, transparent);
+
+  --fg: #e9eff6;
+  --fg-muted: #9aabbd;
+  --fg-subtle: #6f8296;
+  --fg-inverse: #0a0f16;
+
+  --navy: #0b1b2c;
+  --navy-soft: #12293f;
+  --brand: #4f8bff;
+  --brand-hover: #6a9dff;
+  --brand-soft: #16273f;
+  --brand-ring: rgb(79 139 255 / 0.4);
+
+  --normal: #34d399;
+  --normal-soft: #10281f;
+  --info: #eab308;
+  --info-soft: #2a2208;
+  --warning: #f59e0b;
+  --warning-soft: #2e1f0b;
+  --critical: #f87171;
+  --critical-soft: #2e1414;
+
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 6px 16px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 20px 48px rgb(0 0 0 / 0.55);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-canvas-subtle: var(--canvas-subtle);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-overlay: var(--overlay);
+
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-line-soft: var(--border-soft);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-inverse: var(--fg-inverse);
+
+  --color-navy: var(--navy);
+  --color-navy-soft: var(--navy-soft);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+
+  --color-normal: var(--normal);
+  --color-normal-soft: var(--normal-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-critical: var(--critical);
+  --color-critical-soft: var(--critical-soft);
+
+  --radius-card: 0.875rem;
+  --radius-control: 0.625rem;
+
+  --shadow-card: var(--shadow-sm);
+  --shadow-raised: var(--shadow-md);
+  --shadow-float: var(--shadow-lg);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, 'Segoe UI Variable Text', 'Segoe UI',
+    -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'JetBrains Mono', monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv05', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Chiffres alignés : indispensable dans les tableaux industriels. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--brand-soft);
+    color: var(--fg);
+  }
+
+  /* Barres de défilement discrètes, cohérentes dans les deux thèmes. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+}
+
+@layer utilities {
+  .surface-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .grid-backdrop {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes app-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes app-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--critical) 45%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.animate-fade-up {
+  animation: app-fade-up 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-pulse-ring {
+  animation: app-pulse-ring 2.2s ease-out infinite;
+}
+
+/* ─────────────────────────────────────── Contour lumineux animé ────────── */
+
+/*
+ * Un angle animable.
+ *
+ * Une `conic-gradient` ne peut pas être animée directement : le navigateur ne
+ * sait pas interpoler entre deux images de fond. En déclarant l'angle comme
+ * une propriété typée, il devient une valeur numérique — donc interpolable,
+ * et animée par le compositeur plutôt qu'en recalculant le style à chaque
+ * image.
+ *
+ * Sans `@property` (navigateur ancien), l'angle reste à sa valeur initiale :
+ * le contour s'affiche fixe au lieu de tourner. Dégradation acceptable, rien
+ * ne disparaît.
+ */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes app-border-sweep {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+/*
+ * Contour lumineux d'une carte.
+ *
+ * Deux couches de fond superposées :
+ *   1. la **traîne** conique, un arc clair qui fait le tour ;
+ *   2. le **socle** linéaire, vif en haut et éteint en bas, qui garde le
+ *      contour visible même quand la traîne est de l'autre côté.
+ *
+ * Le masque n'en laisse voir que le pourtour : `exclude` évide le centre, ce
+ * qui produit un liseré d'un pixel là où une `border` CSS n'accepterait qu'une
+ * couleur unie.
+ */
+.animated-border {
+  padding: 1px;
+  background-image:
+    conic-gradient(
+      from var(--border-angle),
+      transparent 0deg,
+      rgb(125 170 255 / 0.95) 25deg,
+      rgb(37 99 235 / 0.35) 60deg,
+      transparent 120deg,
+      transparent 360deg
+    ),
+    linear-gradient(to bottom, rgb(77 141 255 / 0.85), rgb(37 99 235 / 0.25) 45%, transparent);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  /* Six secondes : assez lent pour ne pas se lire comme un chargement. */
+  animation: app-border-sweep 6s linear infinite;
+}
+
+/*
+ * La lueur diffuse suit la même traîne, mais floutée et débordante : c'est
+ * elle qui donne l'impression que la carte est éclairée par son propre
+ * contour. Plus lente d'une seconde, pour que les deux ne tournent pas en
+ * phase — deux mouvements synchronisés se lisent comme un seul.
+ */
+.animated-border-glow {
+  background-image: conic-gradient(
+    from var(--border-angle),
+    transparent 0deg,
+    rgb(37 99 235 / 0.45) 25deg,
+    transparent 130deg,
+    transparent 360deg
+  );
+  animation: app-border-sweep 7s linear infinite;
+}
