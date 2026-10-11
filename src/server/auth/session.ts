@@ -10,6 +10,8 @@ import * as t from '../db/schema';
 import { lockoutVerdict, registerFailure, registerSuccess } from '../domain/account-lockout';
 import { PERMISSIONS, can, canAny, type PermissionCode } from '../domain/permissions';
 import { SESSION_COOKIE_NAME, sessionCookieOptions, signSessionToken, verifySessionToken } from './jwt';
+import { demoRoleEmail, isDemoMode } from '@/config/demo';
+import { currentDemoRole } from '../demo/identity';
 
 /**
  * Session applicative.
@@ -52,15 +54,35 @@ export async function destroySession(): Promise<void> {
   store.delete(SESSION_COOKIE_NAME);
 }
 
-/** Lecture de la session courante — mémoïsée pour la durée de la requête. */
-export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
+/** Identifiant porté par le cookie de session signé, `null` sans session valide. */
+async function sessionUserId(): Promise<string | null> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return null;
 
   const verified = await verifySessionToken(token);
-  if (!verified) return null;
-  const userId = verified.userId;
+  return verified?.userId ?? null;
+}
+
+/**
+ * Démonstration : aucun cookie de session, l'utilisateur est le compte du
+ * point de vue choisi — un vrai compte du jeu de démonstration, dont les
+ * droits sont relus en base exactement comme pour une session normale.
+ */
+async function demoUserId(): Promise<string | null> {
+  const db = await getDb();
+  const [row] = await db
+    .select({ id: t.users.id })
+    .from(t.users)
+    .where(eq(t.users.email, demoRoleEmail(await currentDemoRole())))
+    .limit(1);
+  return row?.id ?? null;
+}
+
+/** Lecture de la session courante — mémoïsée pour la durée de la requête. */
+export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
+  const userId = isDemoMode() ? await demoUserId() : await sessionUserId();
+  if (!userId) return null;
 
   const db = await getDb();
   const rows = await db
@@ -196,7 +218,12 @@ export async function verifyCredentials(
 
 export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
-  if (!user) redirect('/connexion');
+  if (!user) {
+    // En démonstration, `/connexion` renvoie vers `/demo` : rediriger ici
+    // bouclerait. Un compte de démonstration absent est une panne de données.
+    if (isDemoMode()) throw new Error('Compte de démonstration introuvable : rechargez le jeu de données.');
+    redirect('/connexion');
+  }
   return user;
 }
 

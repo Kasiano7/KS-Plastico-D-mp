@@ -34,9 +34,15 @@ const SECURITY_HEADERS = [
   },
 ];
 
+/** Démonstration publique : aucune ressource ne doit être indexée, statiques compris. */
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
+
 const nextConfig: NextConfig = {
   async headers() {
-    return [{ source: '/(.*)', headers: SECURITY_HEADERS }];
+    const headers = DEMO_MODE
+      ? [...SECURITY_HEADERS, { key: 'X-Robots-Tag', value: 'noindex, nofollow' }]
+      : SECURITY_HEADERS;
+    return [{ source: '/(.*)', headers }];
   },
 
   // PGlite embarque un binaire WebAssembly : il doit rester externe au bundle

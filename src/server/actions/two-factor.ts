@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { requireUser } from '../auth/session';
 import { beginEnrollment, confirmEnrollment, disableTwoFactor } from '../services/two-factor';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 /**
  * Double authentification — accessible à tout utilisateur authentifié pour
@@ -23,6 +24,8 @@ export type TwoFactorState = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature imposée par useActionState, aucun des deux paramètres n'est nécessaire ici.
 export async function beginEnrollmentAction(_state: TwoFactorState, _formData: FormData): Promise<TwoFactorState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await requireUser();
   const { qrDataUrl, secretBase32 } = await beginEnrollment(user.id, user.email);
   return { step: 'enrolling', qrDataUrl, secretBase32 };
@@ -32,6 +35,8 @@ export async function confirmEnrollmentAction(
   _state: TwoFactorState,
   formData: FormData,
 ): Promise<TwoFactorState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await requireUser();
   const code = String(formData.get('code') ?? '').trim();
   const qrDataUrl = String(formData.get('qrDataUrl') ?? '');
@@ -59,6 +64,7 @@ export async function confirmEnrollmentAction(
 }
 
 export async function disableTwoFactorAction(): Promise<void> {
+  if (demoWriteRefusal()) return;
   const user = await requireUser();
   await disableTwoFactor(user.id);
 

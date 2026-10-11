@@ -22,6 +22,7 @@ import {
   syncPermissionCatalogue,
 } from '../services/roles';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type RoleActionState = { ok?: boolean; message?: string; errors?: string[] };
 
@@ -66,6 +67,8 @@ export async function createRoleAction(
   _state: RoleActionState,
   formData: FormData,
 ): Promise<RoleActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('admin:write');
   await syncPermissionCatalogue();
 
@@ -119,6 +122,8 @@ export async function updateRoleAction(
   _state: RoleActionState,
   formData: FormData,
 ): Promise<RoleActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('admin:write');
   await syncPermissionCatalogue();
 
@@ -203,6 +208,8 @@ export async function deleteRoleAction(
   _state: RoleActionState,
   formData: FormData,
 ): Promise<RoleActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('admin:write');
 
   const roleId = String(formData.get('roleId') ?? '');
@@ -244,6 +251,8 @@ export async function assignRoleAction(
   _state: RoleActionState,
   formData: FormData,
 ): Promise<RoleActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const actor = await assertPermission('admin:write');
 
   const parsed = assignSchema.safeParse({

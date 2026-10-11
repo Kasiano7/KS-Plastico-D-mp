@@ -1,6 +1,7 @@
 import 'server-only';
 
 import webPush from 'web-push';
+import { isDemoMode } from '@/config/demo';
 import type { PushProvider, PushSubscriptionTarget, SendResult } from './types';
 
 /**
@@ -53,6 +54,8 @@ class NullPushProvider implements PushProvider {
 }
 
 export function getPushProvider(): PushProvider {
+  // Démonstration : aucun envoi, aucun appel sortant, quelle que soit la configuration.
+  if (isDemoMode()) return new NullPushProvider();
   if (!process.env.WEB_PUSH_VAPID_PUBLIC_KEY || !process.env.WEB_PUSH_VAPID_PRIVATE_KEY) {
     return new NullPushProvider();
   }

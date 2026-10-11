@@ -7,6 +7,7 @@ import { assertPermission } from '../auth/session';
 import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type CostModelActionState = { ok?: boolean; message?: string; errors?: string[] };
 
@@ -31,6 +32,8 @@ export async function updateCostModelAction(
   _state: CostModelActionState,
   formData: FormData,
 ): Promise<CostModelActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('admin:write');
 
   const parsed = formSchema.safeParse({

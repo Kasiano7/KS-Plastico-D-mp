@@ -9,6 +9,7 @@ import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { planReservation } from '../domain/inventory';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type ActionState = { ok?: boolean; message?: string; orderId?: string };
 
@@ -32,6 +33,8 @@ export async function createOrderAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('orders:write');
 
   const parsed = createOrderSchema.safeParse({
@@ -162,6 +165,8 @@ export async function updateOrderAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('orders:write');
 
   const parsed = updateOrderSchema.safeParse({
@@ -379,6 +384,8 @@ export async function updateOrderPriorityAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('orders:write');
 
   const parsed = prioritySchema.safeParse({

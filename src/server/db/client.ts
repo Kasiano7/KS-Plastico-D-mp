@@ -23,6 +23,8 @@ export type Database = NodePgDatabase<typeof schema>;
 type DbState = {
   db: Database;
   driver: 'pglite' | 'node-postgres';
+  /** Libère la connexion (fichier PGlite ou pool node-postgres). */
+  close: () => Promise<void>;
 };
 
 declare global {
@@ -45,7 +47,7 @@ async function createPgliteDatabase(): Promise<DbState> {
 
   await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
 
-  return { db: db as unknown as Database, driver: 'pglite' };
+  return { db: db as unknown as Database, driver: 'pglite', close: () => client.close() };
 }
 
 async function createNodePostgresDatabase(url: string): Promise<DbState> {
@@ -68,7 +70,7 @@ async function createNodePostgresDatabase(url: string): Promise<DbState> {
     await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
   }
 
-  return { db, driver: 'node-postgres' };
+  return { db, driver: 'node-postgres', close: () => pool.end() };
 }
 
 async function initDatabase(): Promise<DbState> {
@@ -116,6 +118,17 @@ async function initDatabase(): Promise<DbState> {
 export function getDb(): Promise<Database> {
   globalThis.__appDb ??= initDatabase();
   return globalThis.__appDb.then((state) => state.db);
+}
+
+/**
+ * Ferme la connexion et vide le cache : le prochain `getDb()` repasse par
+ * l'initialisation complète (migrations, amorçage, glissement des dates).
+ * Utilisé par la réinitialisation nocturne de la démonstration.
+ */
+export async function closeDatabase(): Promise<void> {
+  const current = globalThis.__appDb;
+  globalThis.__appDb = undefined;
+  if (current) await (await current).close();
 }
 
 export async function getDbDriver(): Promise<DbState['driver']> {

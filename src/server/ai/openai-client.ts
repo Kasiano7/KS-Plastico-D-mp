@@ -1,6 +1,7 @@
 import 'server-only';
 
 import OpenAI, { AzureOpenAI } from 'openai';
+import { isDemoMode } from '@/config/demo';
 
 export type RemoteAiConfig = {
   client: OpenAI;
@@ -15,6 +16,8 @@ export type RemoteAiConfig = {
  * héberger le traitement dans la zone choisie par l'entreprise.
  */
 export function getRemoteAiConfig(): RemoteAiConfig | null {
+  // Démonstration : moteur local uniquement, même si une clé traîne dans l'environnement.
+  if (isDemoMode()) return null;
   const azureKey = process.env.AZURE_OPENAI_API_KEY;
   const azureEndpoint = process.env.AZURE_OPENAI_ENDPOINT;
   const azureDeployment = process.env.AZURE_OPENAI_DEPLOYMENT;

@@ -7,6 +7,7 @@ import { assertPermission } from '../auth/session';
 import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type ProductionOrderActionState = { ok?: boolean; message?: string };
 
@@ -55,6 +56,8 @@ export async function updateProductionOrderStatusAction(
   _state: ProductionOrderActionState,
   formData: FormData,
 ): Promise<ProductionOrderActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('production:write');
 
   const parsed = schema.safeParse({

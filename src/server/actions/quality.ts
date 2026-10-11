@@ -7,6 +7,7 @@ import { assertPermission } from '../auth/session';
 import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type QualityActionState = { ok?: boolean; message?: string };
 
@@ -36,6 +37,8 @@ export async function declareQualityEventAction(
   _state: QualityActionState,
   formData: FormData,
 ): Promise<QualityActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('quality:write');
 
   const parsed = declareSchema.safeParse({

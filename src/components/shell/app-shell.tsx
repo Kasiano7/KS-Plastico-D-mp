@@ -13,6 +13,7 @@ import { CopilotPanel, type CopilotRequest } from './copilot-panel';
 import { CommandPalette } from './command-palette';
 import { ToastProvider } from '@/components/ui/toast';
 import { ThemeToggle } from './theme-toggle';
+import { DemoBar, type DemoBarProps } from './demo-bar';
 
 /** Préférence de sidebar : stockée en cookie pour être connue dès le rendu serveur. */
 export const SIDEBAR_COOKIE = 'app_sidebar_collapsed';
@@ -40,6 +41,7 @@ export function AppShell({
   initialNowIso,
   initialCollapsed,
   onLogout,
+  demo = null,
   children,
 }: {
   user: ShellUser;
@@ -51,6 +53,8 @@ export function AppShell({
   initialNowIso: string;
   initialCollapsed: boolean;
   onLogout: () => void;
+  /** Mode démonstration : bandeau permanent, ni compte ni déconnexion. */
+  demo?: DemoBarProps | null;
   children: ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
@@ -116,7 +120,14 @@ export function AppShell({
       />
 
       <div className="flex min-h-screen flex-col transition-[padding] duration-200 print:pl-0 lg:pl-[var(--sidebar-width)]">
-        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-line bg-surface/90 px-4 backdrop-blur-md print:hidden lg:px-6">
+        {demo ? <DemoBar {...demo} /> : null}
+
+        <header
+          className={cn(
+            'sticky z-30 flex h-16 shrink-0 items-center gap-3 border-b border-line bg-surface/90 px-4 backdrop-blur-md print:hidden lg:px-6',
+            demo ? 'top-9' : 'top-0',
+          )}
+        >
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
@@ -211,6 +222,8 @@ export function AppShell({
               >
                 {initials(user.fullName)}
               </span>
+              {demo ? null : (
+              <>
               <Link
                 href="/mon-compte/notifications"
                 aria-label="Préférences de notification"
@@ -236,6 +249,8 @@ export function AppShell({
               >
                 <LogOut className="size-[18px]" />
               </button>
+              </>
+              )}
             </div>
           </div>
         </header>

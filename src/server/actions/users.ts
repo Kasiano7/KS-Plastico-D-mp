@@ -12,6 +12,7 @@ import { recordAudit } from '../services/audit';
 import { listRoles } from '../services/roles';
 import { issuePasswordToken, sendPasswordEmail } from '../services/password-tokens';
 import { PASSWORD_MIN_LENGTH, passwordPolicyIssues } from '../domain/password-policy';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type UserActionState = { ok?: boolean; message?: string; errors?: string[] };
 
@@ -28,6 +29,8 @@ export async function createUserAction(
   _state: UserActionState,
   formData: FormData,
 ): Promise<UserActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const actor = await assertPermission('admin:write');
 
   const parsed = createUserSchema.safeParse({
@@ -95,6 +98,8 @@ export async function toggleUserActiveAction(
   _state: UserActionState,
   formData: FormData,
 ): Promise<UserActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const actor = await assertPermission('admin:write');
 
   const userId = String(formData.get('userId') ?? '');
@@ -147,6 +152,8 @@ export async function resetUserPasswordAction(
   _state: UserActionState,
   formData: FormData,
 ): Promise<UserActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const actor = await assertPermission('admin:write');
 
   const parsed = resetPasswordSchema.safeParse({
@@ -211,6 +218,8 @@ export async function inviteUserAction(
   _state: UserActionState,
   formData: FormData,
 ): Promise<UserActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const actor = await assertPermission('admin:write');
 
   const parsed = inviteSchema.safeParse({
@@ -299,6 +308,8 @@ export async function deactivateUsersAction(
   _state: UserActionState,
   formData: FormData,
 ): Promise<UserActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const actor = await assertPermission('admin:write');
 
   const ids = formData

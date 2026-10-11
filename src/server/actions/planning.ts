@@ -10,6 +10,7 @@ import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
 import { intervalsOverlap } from '../domain/machines';
 import { formatDateTime } from '@/lib/format';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type PlanningActionState = { ok?: boolean; message?: string };
 
@@ -26,6 +27,8 @@ export async function scheduleProductionOrderAction(
   _state: PlanningActionState,
   formData: FormData,
 ): Promise<PlanningActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   let user;
   try {
     user = await assertPermission('planning:write');
@@ -180,6 +183,8 @@ export async function assignEmployeeToMachineAction(
   _state: PlanningActionState,
   formData: FormData,
 ): Promise<PlanningActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   let user;
   try {
     user = await assertPermission('planning:write');
@@ -257,6 +262,8 @@ export async function cancelProductionOrderAction(
   _state: PlanningActionState,
   formData: FormData,
 ): Promise<PlanningActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   let user;
   try {
     user = await assertPermission('planning:write');

@@ -4,6 +4,7 @@ import { gatewayAuthError } from '@/server/telemetry/gateway-auth';
 import { scheduleAlertEvaluation } from '@/server/services/alert-scheduling';
 import { getDb } from '@/server/db/client';
 import * as t from '@/server/db/schema';
+import { demoWriteRefusalResponse } from '@/server/demo/guard';
 
 export const runtime = 'nodejs';
 
@@ -11,6 +12,9 @@ const MAX_BODY_BYTES = 64 * 1024;
 const MAX_CLOCK_DRIFT_MS = 5 * 60 * 1_000;
 
 export async function GET(request: Request) {
+  // Démonstration : passerelle machines fermée, la télémétrie simulée côté serveur suffit.
+  const refused = demoWriteRefusalResponse();
+  if (refused) return refused;
   const authError = gatewayAuthError(request);
   if (authError) return authError;
 
@@ -62,6 +66,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const refused = demoWriteRefusalResponse();
+  if (refused) return refused;
   const authError = gatewayAuthError(request);
   if (authError) return authError;
 

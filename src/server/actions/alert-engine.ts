@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { assertPermission } from '../auth/session';
 import { evaluateAlerts } from '../services/alert-engine';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type AlertEngineActionState = { ok?: boolean; message?: string };
 
@@ -13,6 +14,8 @@ export type AlertEngineActionState = { ok?: boolean; message?: string };
  * plan Vercel) et pour vérifier son effet immédiatement.
  */
 export async function runAlertEngineAction(): Promise<AlertEngineActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('alerts:write');
   const result = await evaluateAlerts();
 

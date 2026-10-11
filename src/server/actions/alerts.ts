@@ -8,6 +8,7 @@ import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
 import { decideRecommendation } from '../services/recommendations';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type ActionState = { ok?: boolean; message?: string };
 
@@ -22,6 +23,8 @@ export async function decideRecommendationAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('recommendations:approve');
 
   const parsed = decisionSchema.safeParse({
@@ -54,6 +57,8 @@ export async function updateAlertStatusAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('alerts:write');
 
   const parsed = acknowledgeSchema.safeParse({

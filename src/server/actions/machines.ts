@@ -12,6 +12,7 @@ import { DEFAULT_OPERATOR_HOURLY_COST_CENTS, computeDowntimeImpact } from '../do
 import { createAbruptStopRecords } from '../services/machine-stop';
 import { nextIncidentReference } from '../services/incidents';
 import { RETIRE_BLOCKED_STATUSES } from '../domain/machines';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type ActionState = { ok?: boolean; message?: string };
 
@@ -40,6 +41,8 @@ export async function changeMachineStatusAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('machines:write');
 
   const parsed = statusSchema.safeParse({
@@ -157,6 +160,8 @@ export async function declareIncidentAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertAnyPermission(['incidents:declare', 'maintenance:write']);
 
   const parsed = incidentSchema.safeParse({
@@ -447,6 +452,8 @@ export async function createMachineAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('admin:write');
 
   const parsed = readMachineForm(formData);
@@ -515,6 +522,8 @@ export async function updateMachineAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('machines:write');
 
   const parsedId = z.uuid().safeParse(formData.get('machineId'));
@@ -609,6 +618,8 @@ export async function setMachineActiveAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('admin:write');
 
   const parsed = activeSchema.safeParse({

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { isDemoMode } from '@/config/demo';
 import { captureDailySnapshot } from '@/server/services/daily-snapshot';
 import { sendDailyReport } from '@/server/services/daily-report-mail';
 import { evaluateAlerts } from '@/server/services/alert-engine';
@@ -19,6 +20,10 @@ import { safeSecretMatch } from '@/server/security/safe-compare';
  * « Réévaluer maintenant » sur /alertes appelle le même moteur en attendant.
  */
 export async function GET(request: Request) {
+  // Démonstration : l'histoire de l'usine ne doit pas dériver d'un jour à
+  // l'autre, et aucun rapport ne part. La nuit appartient à /api/cron/demo-reset.
+  if (isDemoMode()) return NextResponse.json({ ok: true, skipped: 'demo' });
+
   const secret = process.env.CRON_SECRET;
   if (!secret) {
     return NextResponse.json({ ok: false, error: 'CRON_SECRET non configuré.' }, { status: 503 });

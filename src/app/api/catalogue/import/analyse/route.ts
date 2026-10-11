@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { demoWriteRefusalResponse } from '@/server/demo/guard';
 import { can } from '@/server/domain/permissions';
 import { getCurrentUser } from '@/server/auth/session';
 import { getRemoteAiConfig } from '@/server/ai/openai-client';
@@ -13,6 +14,8 @@ const MAX_FILE_SIZE = 4 * 1024 * 1024;
 const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 export async function POST(request: Request) {
+  const refused = demoWriteRefusalResponse();
+  if (refused) return refused;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: 'Session expirée.' }, { status: 401 });
   if (!can(user.permissions, 'catalog:write')) {

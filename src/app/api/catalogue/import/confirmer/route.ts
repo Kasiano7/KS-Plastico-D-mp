@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
+import { demoWriteRefusalResponse } from '@/server/demo/guard';
 import { inArray } from 'drizzle-orm';
 import { can } from '@/server/domain/permissions';
 import { getCurrentUser } from '@/server/auth/session';
@@ -11,6 +12,8 @@ import type { CatalogImportConfirmation } from '@/lib/catalog-import';
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
+  const refused = demoWriteRefusalResponse();
+  if (refused) return refused;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: 'Session expirée.' }, { status: 401 });
   if (!can(user.permissions, 'catalog:write')) {

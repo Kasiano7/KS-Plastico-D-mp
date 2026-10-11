@@ -7,6 +7,7 @@ import { requireUser } from '../auth/session';
 import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 /**
  * Préférences de notification hors-app — toujours pour SON PROPRE compte
@@ -30,6 +31,8 @@ export async function updateNotificationPreferencesAction(
   _state: NotificationSettingsState,
   formData: FormData,
 ): Promise<NotificationSettingsState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await requireUser();
 
   const parsed = preferencesSchema.safeParse({
@@ -102,6 +105,8 @@ const pushSubscriptionSchema = z.object({
 export async function savePushSubscriptionAction(
   input: z.infer<typeof pushSubscriptionSchema>,
 ): Promise<{ ok: boolean; error?: string }> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await requireUser();
   const parsed = pushSubscriptionSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: 'Abonnement invalide.' };
@@ -126,6 +131,8 @@ export async function savePushSubscriptionAction(
 }
 
 export async function removePushSubscriptionAction(endpoint: string): Promise<{ ok: boolean }> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await requireUser();
   const db = await getDb();
   await db

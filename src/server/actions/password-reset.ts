@@ -15,6 +15,7 @@ import {
 import { consumeRateLimit } from '../services/rate-limit';
 import { getClientIp } from '../security/client-ip';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 /**
  * Réinitialisation de mot de passe en libre-service.
@@ -41,6 +42,8 @@ export async function requestPasswordResetAction(
   _state: ResetRequestState,
   formData: FormData,
 ): Promise<ResetRequestState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const parsed = z.string().email().safeParse(email);
   if (!parsed.success) return { error: 'Adresse e-mail invalide.' };
@@ -95,6 +98,8 @@ export async function setPasswordWithTokenAction(
   _state: SetPasswordState,
   formData: FormData,
 ): Promise<SetPasswordState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const token = String(formData.get('token') ?? '');
   const password = String(formData.get('password') ?? '');
   const confirmation = String(formData.get('confirmation') ?? '');

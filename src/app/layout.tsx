@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
 import { Inter } from 'next/font/google';
 import { THEME_COOKIE } from '@/lib/theme';
+import { isDemoMode } from '@/config/demo';
 import './globals.css';
 
 /**
@@ -22,6 +23,8 @@ export const metadata: Metadata = {
   description:
     "Pilotage temps réel d'une usine de démonstration : production, machines, stocks, commandes, qualité et recommandations.",
   applicationName: 'KS Plastico Demo',
+  // Démonstration publique : jamais référencée (doublé par X-Robots-Tag et robots.txt).
+  ...(isDemoMode() ? { robots: { index: false, follow: false } } : {}),
 };
 
 export const viewport: Viewport = {

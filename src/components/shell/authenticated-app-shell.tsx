@@ -8,6 +8,8 @@ import { getFactoryContext, getOpenAlertCount } from '@/server/services/factory-
 import { SEVERITY_LABELS } from '@/components/ui/severity';
 import { cn } from '@/lib/cn';
 import { DASHBOARD_AI_SUGGESTIONS } from '@/server/services/dashboard';
+import { DEMO_ROLES, isDemoBlockedPath, isDemoMode } from '@/config/demo';
+import { currentDemoRole, isDemoEmbed } from '@/server/demo/identity';
 
 /**
  * Coquille authentifiée partagée par l'accueil et les pages métier.
@@ -26,15 +28,23 @@ export async function AuthenticatedAppShell({
   const collapsed = cookieStore.get(SIDEBAR_COOKIE)?.value === 'true';
 
   const canSeeDashboard = can(user.permissions, 'dashboard:read');
-  const [openAlerts, context] = await Promise.all([
+  const demoMode = isDemoMode();
+  const [openAlerts, context, demoRole, demoEmbed] = await Promise.all([
     can(user.permissions, 'alerts:read') ? getOpenAlertCount() : Promise.resolve(0),
     canSeeDashboard ? getFactoryContext() : Promise.resolve(null),
+    demoMode ? currentDemoRole() : Promise.resolve(null),
+    demoMode ? isDemoEmbed() : Promise.resolve(false),
   ]);
+
+  // En démonstration, l'administration redirige vers /demo : ne pas la proposer.
+  const allowedHrefs = navItemsFor(user.permissions)
+    .map((item) => item.href)
+    .filter((href) => !(demoMode && isDemoBlockedPath(href)));
 
   return (
     <AppShell
       user={{ fullName: user.fullName, email: user.email, roleLabel: user.roleLabel }}
-      allowedHrefs={navItemsFor(user.permissions).map((item) => item.href)}
+      allowedHrefs={allowedHrefs}
       openAlerts={openAlerts}
       status={
         context
@@ -50,6 +60,15 @@ export async function AuthenticatedAppShell({
       initialNowIso={new Date().toISOString()}
       initialCollapsed={collapsed}
       onLogout={logoutAction}
+      demo={
+        demoRole
+          ? {
+              roles: DEMO_ROLES.map(({ key, label }) => ({ key, label })),
+              currentRole: demoRole,
+              embed: demoEmbed,
+            }
+          : null
+      }
     >
       <div
         data-theme={dashboard ? 'dashboard' : undefined}

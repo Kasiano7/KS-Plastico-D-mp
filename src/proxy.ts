@@ -6,6 +6,8 @@ import {
   signSessionToken,
   verifySessionToken,
 } from '@/server/auth/jwt';
+import { isDemoMode } from '@/config/demo';
+import { demoProxy } from '@/server/demo/proxy';
 
 /**
  * Deux responsabilités, toutes deux du ressort exclusif du proxy (elles ont
@@ -75,6 +77,9 @@ export async function proxy(request: NextRequest) {
     if (csp) response.headers.set('Content-Security-Policy', csp);
     return response;
   }
+
+  // Démonstration publique : pas de session, point de vue résolu sans connexion.
+  if (isDemoMode()) return demoProxy(request, { requestHeaders, next: () => next(), csp });
 
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return next();

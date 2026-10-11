@@ -7,6 +7,7 @@ import { assertPermission } from '../auth/session';
 import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type DocumentActionState = { ok?: boolean; message?: string };
 
@@ -37,6 +38,8 @@ export async function uploadMachineDocumentAction(
   _state: DocumentActionState,
   formData: FormData,
 ): Promise<DocumentActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('machines:write');
 
   const parsed = uploadSchema.safeParse({
@@ -100,6 +103,8 @@ export async function deleteMachineDocumentAction(
   _state: DocumentActionState,
   formData: FormData,
 ): Promise<DocumentActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('machines:write');
 
   const parsed = deleteSchema.safeParse({ documentId: formData.get('documentId') });

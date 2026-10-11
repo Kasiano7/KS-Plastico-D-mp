@@ -1,6 +1,7 @@
 import 'server-only';
 
 import type { SendResult, SmsProvider } from './types';
+import { isDemoMode } from '@/config/demo';
 
 /**
  * Twilio, via son API REST directement (`fetch`, Basic Auth + formulaire
@@ -54,6 +55,8 @@ class NullSmsProvider implements SmsProvider {
 }
 
 export function getSmsProvider(): SmsProvider {
+  // Démonstration : aucun envoi, aucun appel sortant, quelle que soit la configuration.
+  if (isDemoMode()) return new NullSmsProvider();
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const fromNumber = process.env.TWILIO_FROM_NUMBER;

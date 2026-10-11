@@ -21,6 +21,7 @@ import { verifyLoginCode } from '../services/two-factor';
 import { recordAudit } from '../services/audit';
 import { consumeRateLimit } from '../services/rate-limit';
 import { getClientIp } from '../security/client-ip';
+import { demoWriteRefusal } from '../demo/guard';
 
 const credentialsSchema = z.object({
   email: z.email("Adresse e-mail invalide."),
@@ -44,6 +45,8 @@ const LOGIN_WINDOW_SECONDS = 10 * 60;
  * l'identité vérifiée jusqu'à l'étape 2 (`verifyTwoFactorLoginAction`).
  */
 export async function loginAction(_state: LoginState, formData: FormData): Promise<LoginState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const parsed = credentialsSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -120,6 +123,8 @@ const TWO_FACTOR_WINDOW_SECONDS = 10 * 60;
  * protégerait quasiment rien contre un essai systématique.
  */
 export async function verifyTwoFactorLoginAction(_state: LoginState, formData: FormData): Promise<LoginState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const store = await cookies();
   const pendingToken = store.get(TWO_FACTOR_PENDING_COOKIE_NAME)?.value;
   const pending = pendingToken ? await verifyTwoFactorPendingToken(pendingToken) : null;
@@ -161,6 +166,8 @@ export async function verifyTwoFactorLoginAction(_state: LoginState, formData: F
 }
 
 export async function logoutAction(): Promise<void> {
+  // En démonstration, il n'y a pas de session à fermer : retour à l'accueil de la démo.
+  if (demoWriteRefusal()) redirect('/demo');
   await destroySession();
   redirect('/connexion');
 }

@@ -4,6 +4,8 @@ import { getCurrentUser } from '@/server/auth/session';
 import { can } from '@/server/domain/permissions';
 import { askFactory } from '@/server/ai';
 import { consumeRateLimit } from '@/server/services/rate-limit';
+import { getClientIp } from '@/server/security/client-ip';
+import { isDemoMode } from '@/config/demo';
 import {
   getOrCreateConversation,
   getRecentTurns,
@@ -14,6 +16,8 @@ import {
 /** Par utilisateur authentifié : assez large pour une conversation active, pas pour un script. */
 const COPILOTE_REQUESTS_PER_MINUTE = 20;
 const COPILOTE_WINDOW_SECONDS = 60;
+/** Démonstration publique : par adresse IP, plus serré qu'un compte authentifié. */
+const DEMO_COPILOTE_REQUESTS_PER_MINUTE = 10;
 
 const schema = z.object({
   question: z.string().min(1).max(500),
@@ -36,11 +40,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Accès au copilote non autorisé.' }, { status: 403 });
   }
 
-  const rateLimit = await consumeRateLimit(
-    `copilote:${user.id}`,
-    COPILOTE_REQUESTS_PER_MINUTE,
-    COPILOTE_WINDOW_SECONDS,
-  );
+  // En démonstration, tous les visiteurs partagent quelques comptes : la
+  // limite par utilisateur ne protège plus rien, elle est donc posée par IP.
+  const rateLimit = isDemoMode()
+    ? await consumeRateLimit(
+        `copilote-ip:${await getClientIp()}`,
+        DEMO_COPILOTE_REQUESTS_PER_MINUTE,
+        COPILOTE_WINDOW_SECONDS,
+      )
+    : await consumeRateLimit(`copilote:${user.id}`, COPILOTE_REQUESTS_PER_MINUTE, COPILOTE_WINDOW_SECONDS);
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: 'Trop de questions en peu de temps. Patientez quelques instants.' },

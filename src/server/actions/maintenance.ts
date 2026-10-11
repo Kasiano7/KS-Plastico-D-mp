@@ -9,6 +9,7 @@ import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { parisLocalDateTime } from '../domain/maintenance';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type MaintenanceActionState = { ok?: boolean; message?: string };
 
@@ -29,6 +30,8 @@ export async function scheduleMaintenanceAction(
   _state: MaintenanceActionState,
   formData: FormData,
 ): Promise<MaintenanceActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('maintenance:write');
   const parsed = scheduleSchema.safeParse({
     machineId: formData.get('machineId'),
@@ -96,6 +99,8 @@ export async function resolveIncidentAction(
   _state: MaintenanceActionState,
   formData: FormData,
 ): Promise<MaintenanceActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('maintenance:write');
   const parsed = resolveSchema.safeParse({
     incidentId: formData.get('incidentId'),
@@ -164,6 +169,8 @@ export async function completeMaintenanceTaskAction(
   _state: MaintenanceActionState,
   formData: FormData,
 ): Promise<MaintenanceActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('maintenance:write');
   const parsed = completeSchema.safeParse({ taskId: formData.get('taskId') });
   if (!parsed.success) return { ok: false, message: 'Intervention invalide.' };
@@ -218,6 +225,8 @@ export async function cancelMaintenanceTaskAction(
   _state: MaintenanceActionState,
   formData: FormData,
 ): Promise<MaintenanceActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('maintenance:write');
   const parsed = completeSchema.safeParse({ taskId: formData.get('taskId') });
   if (!parsed.success) return { ok: false, message: 'Intervention invalide.' };

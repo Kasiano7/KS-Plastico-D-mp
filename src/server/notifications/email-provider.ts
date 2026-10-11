@@ -1,6 +1,7 @@
 import 'server-only';
 
 import type { EmailProvider, SendResult } from './types';
+import { isDemoMode } from '@/config/demo';
 
 /**
  * Resend, via son API REST directement (`fetch`) — pas de SDK : c'est un
@@ -53,6 +54,8 @@ class NullEmailProvider implements EmailProvider {
 }
 
 export function getEmailProvider(): EmailProvider {
+  // Démonstration : aucun envoi, aucun appel sortant, quelle que soit la configuration.
+  if (isDemoMode()) return new NullEmailProvider();
   const apiKey = process.env.RESEND_EMAIL_API_KEY;
   const fromAddress = process.env.NOTIFICATION_EMAIL_FROM;
   if (!apiKey || !fromAddress) return new NullEmailProvider();

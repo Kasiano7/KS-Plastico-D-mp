@@ -7,6 +7,7 @@ import { assertPermission } from '../auth/session';
 import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type EmployeeActionState = { ok?: boolean; message?: string; errors?: string[] };
 
@@ -48,6 +49,8 @@ export async function createEmployeeAction(
   _state: EmployeeActionState,
   formData: FormData,
 ): Promise<EmployeeActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('hr:write');
   const parsed = employeeFormSchema.safeParse(readEmployeeForm(formData));
   if (!parsed.success) {
@@ -96,6 +99,8 @@ export async function updateEmployeeAction(
   _state: EmployeeActionState,
   formData: FormData,
 ): Promise<EmployeeActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('hr:write');
   const employeeId = String(formData.get('employeeId') ?? '');
   const idCheck = z.uuid().safeParse(employeeId);
@@ -158,6 +163,8 @@ export async function toggleEmployeeActiveAction(
   _state: EmployeeActionState,
   formData: FormData,
 ): Promise<EmployeeActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('hr:write');
   const employeeId = String(formData.get('employeeId') ?? '');
   const idCheck = z.uuid().safeParse(employeeId);
@@ -197,6 +204,8 @@ export async function declareAbsenceAction(
   _state: EmployeeActionState,
   formData: FormData,
 ): Promise<EmployeeActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('hr:write');
   const parsed = absenceFormSchema.safeParse({
     employeeId: formData.get('employeeId'),
@@ -258,6 +267,8 @@ export async function addQualificationAction(
   _state: EmployeeActionState,
   formData: FormData,
 ): Promise<EmployeeActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('hr:write');
   const parsed = qualificationFormSchema.safeParse({
     employeeId: formData.get('employeeId'),
@@ -319,6 +330,8 @@ export async function assignSkillAction(
   _state: EmployeeActionState,
   formData: FormData,
 ): Promise<EmployeeActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertPermission('hr:write');
   const parsed = skillFormSchema.safeParse({
     employeeId: formData.get('employeeId'),

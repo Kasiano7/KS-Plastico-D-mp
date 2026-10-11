@@ -8,6 +8,7 @@ import { getDb } from '../db/client';
 import * as t from '../db/schema';
 import { recordAudit } from '../services/audit';
 import { canCancelPallet } from '../domain/pallets';
+import { demoWriteRefusal } from '../demo/guard';
 
 export type ActionState = { ok?: boolean; message?: string; palletCode?: string };
 
@@ -28,6 +29,8 @@ export async function completePalletAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertAnyPermission(['workstation:use', 'production:write']);
 
   const parsed = completeSchema.safeParse({
@@ -192,6 +195,8 @@ export async function cancelPalletAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const refused = demoWriteRefusal();
+  if (refused) return refused;
   const user = await assertAnyPermission(['workstation:use', 'production:write']);
 
   const parsed = cancelSchema.safeParse({
