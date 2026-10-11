@@ -6,6 +6,14 @@ import * as t from '../src/server/db/schema';
 
 const TEST_MATRICULE = 'E2E-TEST-001';
 
+// Le nettoyage écrit directement en base. Avec PGlite (sans `DATABASE_URL`),
+// le fichier est déjà ouvert par le serveur de développement : un second
+// processus échoue, et peut même corrompre la base. Ce test exige PostgreSQL.
+test.skip(
+  !process.env.DATABASE_URL?.startsWith('post'),
+  'Nettoyage direct en base : nécessite PostgreSQL (DATABASE_URL), pas PGlite partagé avec le serveur.',
+);
+
 async function deleteTestEmployee(): Promise<void> {
   const { db, close } = await connect();
   await db.delete(t.employees).where(eq(t.employees.matricule, TEST_MATRICULE));

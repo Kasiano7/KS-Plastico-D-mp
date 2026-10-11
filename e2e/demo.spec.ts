@@ -15,8 +15,18 @@ function recordRequests(page: Page): string[] {
   return urls;
 }
 
+/**
+ * Le changement de point de vue soumet le formulaire à la sélection, une fois
+ * React hydraté. En développement, la première visite d'une page compile et
+ * peut précéder l'hydratation : on resélectionne jusqu'à la navigation.
+ */
 async function chooseRole(page: Page, label: string) {
-  await page.getByLabel('Point de vue').selectOption({ label });
+  const select = page.getByLabel('Point de vue');
+  const before = page.url();
+  await expect(async () => {
+    await select.selectOption({ label });
+    await expect(page).not.toHaveURL(before, { timeout: 3_000 });
+  }).toPass();
 }
 
 test.describe('Mode démonstration', () => {
@@ -48,7 +58,9 @@ test.describe('Mode démonstration', () => {
     await expect(page).toHaveURL(/\/acces-refuse/);
 
     await chooseRole(page, 'Direction');
-    await expect(page).toHaveURL('/');
+    // Le rôle peut rester dans l'URL tant que le cookie n'est pas confirmé : c'est le repli voulu.
+    await expect(page).toHaveURL(/\/(\?role=direction)?$/);
+    await expect(page.getByLabel('Point de vue')).toHaveValue('direction');
     await page.goto('/commandes');
     await expect(page).toHaveURL('/commandes');
   });
