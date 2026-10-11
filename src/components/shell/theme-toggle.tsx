@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from 'lucide-react';
 import { THEME_COOKIE } from '@/lib/theme';
+import { writePreferenceCookie } from '@/lib/preference-cookie';
 
 /**
  * Bascule clair / sombre.
@@ -14,7 +15,7 @@ export function ThemeToggle() {
   function toggle() {
     const next = !document.documentElement.classList.contains('dark');
     document.documentElement.classList.toggle('dark', next);
-    document.cookie = `${THEME_COOKIE}=${next ? 'dark' : 'light'}; path=/; max-age=31536000; samesite=lax`;
+    writePreferenceCookie(THEME_COOKIE, next ? 'dark' : 'light');
   }
 
   return (

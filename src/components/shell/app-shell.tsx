@@ -14,6 +14,8 @@ import { CommandPalette } from './command-palette';
 import { ToastProvider } from '@/components/ui/toast';
 import { ThemeToggle } from './theme-toggle';
 import { DemoBar, type DemoBarProps } from './demo-bar';
+import { EmbedLinkPolicy } from './embed-link-policy';
+import { writePreferenceCookie } from '@/lib/preference-cookie';
 
 /** Préférence de sidebar : stockée en cookie pour être connue dès le rendu serveur. */
 export const SIDEBAR_COOKIE = 'app_sidebar_collapsed';
@@ -77,7 +79,7 @@ export function AppShell({
   const toggleCollapsed = useCallback(() => {
     setCollapsed((previous) => {
       const next = !previous;
-      document.cookie = `${SIDEBAR_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+      writePreferenceCookie(SIDEBAR_COOKIE, String(next));
       return next;
     });
   }, []);
@@ -121,6 +123,7 @@ export function AppShell({
 
       <div className="flex min-h-screen flex-col transition-[padding] duration-200 print:pl-0 lg:pl-[var(--sidebar-width)]">
         {demo ? <DemoBar {...demo} /> : null}
+        {demo?.embed ? <EmbedLinkPolicy /> : null}
 
         <header
           className={cn(

@@ -39,8 +39,15 @@ const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 const nextConfig: NextConfig = {
   async headers() {
+    // Démonstration intégrée au site KS : `X-Frame-Options` ne sait désigner
+    // qu'une origine (`SAMEORIGIN`), il est donc retiré au profit de
+    // `frame-ancestors` (CSP du proxy), qui liste les sites autorisés.
+    // Hors démonstration, rien ne change.
     const headers = DEMO_MODE
-      ? [...SECURITY_HEADERS, { key: 'X-Robots-Tag', value: 'noindex, nofollow' }]
+      ? [
+          ...SECURITY_HEADERS.filter((header) => header.key !== 'X-Frame-Options'),
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        ]
       : SECURITY_HEADERS;
     return [{ source: '/(.*)', headers }];
   },

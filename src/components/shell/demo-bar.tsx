@@ -24,7 +24,10 @@ export function DemoBar({ roles, currentRole, embed }: DemoBarProps) {
     >
       <p className="flex min-w-0 items-center gap-1.5 font-medium">
         <FlaskConical aria-hidden className="size-3.5 shrink-0 text-[#2f91ff]" />
-        <span className="truncate">Démonstration · données fictives</span>
+        <span className="truncate">
+          <span className="sm:hidden">Démo</span>
+          <span className="hidden sm:inline">Démonstration</span> · données fictives
+        </span>
       </p>
 
       <form action="/demo" method="get" className="ml-auto flex items-center gap-2">
@@ -37,7 +40,7 @@ export function DemoBar({ roles, currentRole, embed }: DemoBarProps) {
           name="role"
           defaultValue={currentRole}
           onChange={(event) => event.currentTarget.form?.requestSubmit()}
-          className="h-7 rounded-[var(--radius-control)] border border-white/20 bg-white/10 px-2 text-[0.75rem] text-white focus:outline-2 focus:outline-[#2f91ff]"
+          className="h-7 max-w-[45vw] rounded-[var(--radius-control)] border border-white/20 bg-white/10 px-2 text-[0.75rem] text-white focus:outline-2 focus:outline-[#2f91ff]"
         >
           {roles.map((role) => (
             <option key={role.key} value={role.key} className="text-fg">

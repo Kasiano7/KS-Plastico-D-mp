@@ -6,7 +6,7 @@ import {
   signSessionToken,
   verifySessionToken,
 } from '@/server/auth/jwt';
-import { isDemoMode } from '@/config/demo';
+import { demoFrameAncestors, isDemoMode } from '@/config/demo';
 import { demoProxy } from '@/server/demo/proxy';
 
 /**
@@ -36,6 +36,16 @@ import { demoProxy } from '@/server/demo/proxy';
 
 const ROTATE_AFTER_SECONDS = 30 * 60;
 
+/**
+ * `frame-ancestors` : `'self'` seul en fonctionnement normal. En
+ * démonstration, s'y ajoutent les sites autorisés à intégrer l'application
+ * (`DEMO_ALLOWED_FRAME_ANCESTORS`, site vitrine KS par défaut) — le reste de
+ * la politique est strictement identique.
+ */
+function frameAncestors(): string {
+  return ["'self'", ...(isDemoMode() ? demoFrameAncestors() : [])].join(' ');
+}
+
 function buildCsp(nonce: string): string {
   return [
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
@@ -56,7 +66,7 @@ function buildCsp(nonce: string): string {
     // ses propres documents dans un cadre plutôt que de forcer un
     // téléchargement. `object-src 'none'` reste en place : seul `<iframe>`
     // est permis, jamais `<object>` ni `<embed>`.
-    "frame-ancestors 'self'",
+    `frame-ancestors ${frameAncestors()}`,
     'upgrade-insecure-requests',
   ].join('; ');
 }

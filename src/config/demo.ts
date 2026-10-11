@@ -57,3 +57,33 @@ export function isDemoBlockedPath(pathname: string): boolean {
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 }
+
+/**
+ * Sites autorisés à intégrer la démonstration en iframe (`frame-ancestors`),
+ * en plus de `'self'`. Lus dans `DEMO_ALLOWED_FRAME_ANCESTORS` (origines
+ * séparées par des virgules ou des espaces) ; par défaut, le site vitrine KS
+ * Développement et son serveur de développement local.
+ */
+export const DEFAULT_DEMO_FRAME_ANCESTORS = ['https://www.ks-developpement.fr', 'http://localhost:3000'] as const;
+
+/**
+ * Origines validées une à une : seule une origine `http(s)://hôte[:port]`
+ * est retenue. Un jeton mal formé est ignoré plutôt que recopié tel quel
+ * dans la CSP, où un `;` suffirait à injecter une directive.
+ */
+export function demoFrameAncestors(raw = process.env.DEMO_ALLOWED_FRAME_ANCESTORS): string[] {
+  const tokens = raw?.trim() ? raw.split(/[\s,]+/).filter(Boolean) : [...DEFAULT_DEMO_FRAME_ANCESTORS];
+  const origins = tokens.flatMap((token) => {
+    try {
+      const url = new URL(token);
+      const isOriginOnly = url.pathname === '/' && !url.search && !url.hash;
+      // `new URL` tolère `;` dans un nom d'hôte : le nom est donc revérifié.
+      const plainHost = /^[a-z0-9.-]+$/i.test(url.hostname);
+      const httpScheme = url.protocol === 'https:' || url.protocol === 'http:';
+      return httpScheme && isOriginOnly && plainHost ? [url.origin] : [];
+    } catch {
+      return [];
+    }
+  });
+  return [...new Set(origins)];
+}
