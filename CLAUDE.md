@@ -130,6 +130,23 @@ Documents détaillés :
 10. **Le jeu de démonstration raconte une histoire cohérente.** Ne pas y
     introduire de valeurs aléatoires indépendantes : une presse arrêtée doit
     réellement bloquer un ordre, qui bloque réellement une commande.
+11. **Toute Server Action qui écrit commence par la garde démo** :
+    `const refused = demoWriteRefusal(); if (refused) return refused;`
+    (`src/server/demo/guard.ts`), avant même l'autorisation. Le test
+    `demo-guard.test.ts` échoue sinon. Un route handler qui écrit appelle
+    `demoWriteRefusalResponse()`. Tout nouveau service sortant (e-mail, SMS,
+    IA distante…) doit être coupé quand `isDemoMode()` est vrai.
+
+---
+
+## Mode démonstration publique
+
+Cette copie est la démonstration publique **KS Plastico Demo**, intégrée en
+iframe au site vitrine KS Développement. `DEMO_MODE=true` : accès par `/demo`
+sans connexion, sélecteur de point de vue (rôles réels), écritures refusées,
+services externes coupés, base réinitialisée chaque nuit. Hors de ce mode,
+l'application fonctionne normalement. Détails, déploiement et limites :
+[README.md](README.md).
 
 ---
 
