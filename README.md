@@ -64,14 +64,22 @@ Désactivé, il ne change **rien** au fonctionnement normal.
 
 ### Accès
 
-- `/demo` ouvre directement le tableau de bord, sans formulaire de connexion.
+- `/demo` ouvre directement le tableau de bord, sans formulaire de connexion
+  (pour l'opérateur, son accueil est « Mon poste »).
+- **Changement d'utilisateur en haut à droite**, à la place du compte : un
+  menu déroulant liste les 7 personnes de l'usine avec leur fonction (Anne
+  Laurent — Direction, Jérôme Leroy — Responsable de production, Inès
+  Garnier — Chef d'atelier, Hervé Morel — Responsable maintenance, Nathalie
+  Colin — Responsable RH, Gilles Simon — Responsable stock, Paul Durand —
+  Opérateur). Ce sont de vrais comptes du jeu de démonstration : leurs droits
+  sont relus en base, comme pour une session normale (menus, pages, actions).
 - Un bandeau « Démonstration · données fictives » reste visible en haut de
-  chaque page, avec un sélecteur de **point de vue** : Direction, Responsable
-  de production, Chef d'atelier, Maintenance, Opérateur. Ce sont de vrais
-  comptes du jeu de démonstration : leurs droits sont relus en base, comme
-  pour une session normale (menus, pages, actions).
-- `/connexion`, `/mot-de-passe`, `/mon-compte` et `/administration`
-  redirigent vers `/demo`. Aucune page ne renvoie vers `/connexion`.
+  chaque page ; sur « Accès refusé », il porte lui-même le menu des comptes.
+- **Administration** : l'onglet reste visible, mais son contenu est grisé et
+  inerte sous l'avertissement « Désactivé en mode démo » — personne ne peut
+  modifier les accès.
+- `/connexion`, `/mot-de-passe` et `/mon-compte` redirigent vers `/demo`.
+  Aucune page ne renvoie vers `/connexion`.
 
 ### Identité sans cookie tiers
 
@@ -79,7 +87,7 @@ Désactivé, il ne change **rien** au fonctionnement normal.
 2. Le rôle choisi est mémorisé dans un cookie
    `demo_role` — `SameSite=None; Secure; HttpOnly; Partitioned` (CHIPS).
 3. Si le navigateur refuse ce cookie, le proxy propage `?role=` (et
-   `?embed=1`) de page en page : l'URL porte alors le point de vue.
+   `?embed=1`) de page en page : l'URL porte alors l'utilisateur choisi.
 
 ### Intégration (`?embed=1`)
 
@@ -103,7 +111,9 @@ Désactivé, il ne change **rien** au fonctionnement normal.
 - **Chaque nuit à 03:00 UTC**, `/api/cron/demo-reset` réinitialise la base :
   le tableau de bord raconte la même histoire chaque matin, et ce que les
   visiteurs ont laissé (conversations du copilote, compteurs de débit) est
-  effacé.
+  effacé. **Verrou** : la réinitialisation refuse d'effacer une base qui
+  contient un seul compte hors `@demo.example` — une `DATABASE_URL` pointant
+  par erreur vers une base réelle n'est donc jamais vidée.
 
 ### Non-indexation
 
@@ -128,7 +138,7 @@ appelée en tête de **chaque Server Action qui écrit** ; le test
 | Maintenance | planification, clôture et annulation de tâche, résolution d'incident |
 | Personnel | création et modification de fiche, activation, absences, habilitations, compétences |
 | Documents | dépôt et suppression de documents machine |
-| Comptes | connexion, double authentification, mot de passe, utilisateurs, rôles, préférences et abonnements de notification |
+| Comptes et administration | connexion, double authentification, mot de passe, utilisateurs, rôles et permissions (page grisée), préférences et abonnements de notification |
 | Routes API (403) | import de catalogue (analyse et confirmation), passerelle machines |
 
 **Services coupés**, quelle que soit la configuration : e-mail (Resend), SMS
@@ -233,7 +243,7 @@ ignorées : `OPENAI_*`, `AZURE_OPENAI_*`, `RESEND_EMAIL_API_KEY`,
   n'est exécuté qu'avec PostgreSQL (`DATABASE_URL`) ; avec PGlite, il est
   sauté (le fichier est déjà ouvert par le serveur).
 - **Préexistant** : avertissement d'hydratation (formulaire imbriqué) sur
-  `/administration`, page inaccessible en démonstration ; vulnérabilités
+  `/administration` (message en console uniquement ; la page est grisée en démonstration) ; vulnérabilités
   signalées par `npm audit` sur des dépendances, non traitées ici.
 
 ---
@@ -259,7 +269,9 @@ ignorées : `OPENAI_*`, `AZURE_OPENAI_*`, `RESEND_EMAIL_API_KEY`,
 | `src/server/demo/guard.ts` | Garde centrale des écritures |
 | `src/server/demo/identity.ts` | Rôle et affichage intégré de la requête courante |
 | `src/server/demo/reset.ts` + `src/app/api/cron/demo-reset/` | Réinitialisation nocturne |
-| `src/components/shell/demo-bar.tsx` | Bandeau et sélecteur de point de vue |
+| `src/components/shell/demo-bar.tsx` | Bandeau de démonstration |
+| `src/components/shell/demo-account-switcher.tsx` + `src/server/demo/accounts.ts` | Menu de changement d'utilisateur (en haut à droite) |
+| `src/app/(app)/administration/layout.tsx` | Administration grisée en démonstration |
 | `src/components/shell/embed-link-policy.tsx` | Liens sortants en nouvel onglet (`?embed=1`) |
 | `docs/captures/` | Captures de l'intégration (iframe, rôles, 1024 px, mobile) |
 

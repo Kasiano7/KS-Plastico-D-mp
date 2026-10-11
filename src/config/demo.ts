@@ -18,12 +18,14 @@ export function isDemoMode(): boolean {
   return process.env.DEMO_MODE === 'true';
 }
 
-/** Points de vue proposés : des comptes réels du jeu de démonstration, avec leurs droits réels. */
+/** Comptes proposés au changement d’utilisateur : les comptes réels du jeu de démonstration, avec leurs droits réels. */
 export const DEMO_ROLES = [
   { key: 'direction', label: 'Direction', email: 'direction@demo.example' },
   { key: 'production', label: 'Responsable de production', email: 'production@demo.example' },
   { key: 'atelier', label: "Chef d'atelier", email: 'atelier@demo.example' },
-  { key: 'maintenance', label: 'Maintenance', email: 'maintenance@demo.example' },
+  { key: 'maintenance', label: 'Responsable maintenance', email: 'maintenance@demo.example' },
+  { key: 'rh', label: 'Responsable RH', email: 'rh@demo.example' },
+  { key: 'stock', label: 'Responsable stock', email: 'stock@demo.example' },
   { key: 'operateur', label: 'Opérateur', email: 'operateur@demo.example' },
 ] as const;
 
@@ -39,8 +41,11 @@ export const DEMO_EMBED_COOKIE = 'demo_embed';
 export const DEMO_ROLE_HEADER = 'x-demo-role';
 export const DEMO_EMBED_HEADER = 'x-demo-embed';
 
-/** Pages sans objet en démonstration : connexion, comptes, administration. */
-export const DEMO_BLOCKED_PATH_PREFIXES = ['/connexion', '/mot-de-passe', '/administration', '/mon-compte'] as const;
+/**
+ * Pages sans objet en démonstration : connexion, mot de passe, compte personnel.
+ * L'administration, elle, reste visible mais en lecture seule (grisée).
+ */
+export const DEMO_BLOCKED_PATH_PREFIXES = ['/connexion', '/mot-de-passe', '/mon-compte'] as const;
 
 export const DEMO_WRITE_DISABLED_MESSAGE = 'Action désactivée dans la démonstration';
 

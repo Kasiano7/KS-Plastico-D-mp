@@ -8,7 +8,8 @@ import { getFactoryContext, getOpenAlertCount } from '@/server/services/factory-
 import { SEVERITY_LABELS } from '@/components/ui/severity';
 import { cn } from '@/lib/cn';
 import { DASHBOARD_AI_SUGGESTIONS } from '@/server/services/dashboard';
-import { DEMO_ROLES, isDemoBlockedPath, isDemoMode } from '@/config/demo';
+import { isDemoBlockedPath, isDemoMode } from '@/config/demo';
+import { listDemoAccounts } from '@/server/demo/accounts';
 import { currentDemoRole, isDemoEmbed } from '@/server/demo/identity';
 
 /**
@@ -29,14 +30,15 @@ export async function AuthenticatedAppShell({
 
   const canSeeDashboard = can(user.permissions, 'dashboard:read');
   const demoMode = isDemoMode();
-  const [openAlerts, context, demoRole, demoEmbed] = await Promise.all([
+  const [openAlerts, context, demoRole, demoEmbed, demoAccounts] = await Promise.all([
     can(user.permissions, 'alerts:read') ? getOpenAlertCount() : Promise.resolve(0),
     canSeeDashboard ? getFactoryContext() : Promise.resolve(null),
     demoMode ? currentDemoRole() : Promise.resolve(null),
     demoMode ? isDemoEmbed() : Promise.resolve(false),
+    demoMode ? listDemoAccounts() : Promise.resolve([]),
   ]);
 
-  // En démonstration, l'administration redirige vers /demo : ne pas la proposer.
+  // En démonstration, les pages de compte redirigent vers /demo : ne pas les proposer.
   const allowedHrefs = navItemsFor(user.permissions)
     .map((item) => item.href)
     .filter((href) => !(demoMode && isDemoBlockedPath(href)));
@@ -63,7 +65,7 @@ export async function AuthenticatedAppShell({
       demo={
         demoRole
           ? {
-              roles: DEMO_ROLES.map(({ key, label }) => ({ key, label })),
+              accounts: demoAccounts,
               currentRole: demoRole,
               embed: demoEmbed,
             }

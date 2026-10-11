@@ -31,9 +31,9 @@ describe('outils du mode démonstration', () => {
     expect(parseDemoRole(null)).toBeNull();
   });
 
-  it('redirige les pages de compte et d’administration, pas les pages métier', () => {
+  it('redirige les pages de compte, pas l’administration ni les pages métier', () => {
     expect(isDemoBlockedPath('/connexion')).toBe(true);
-    expect(isDemoBlockedPath('/administration/roles/nouveau')).toBe(true);
+    expect(isDemoBlockedPath('/administration/roles/nouveau')).toBe(false);
     expect(isDemoBlockedPath('/mon-compte/securite')).toBe(true);
     expect(isDemoBlockedPath('/machines')).toBe(false);
     expect(isDemoBlockedPath('/connexions')).toBe(false);

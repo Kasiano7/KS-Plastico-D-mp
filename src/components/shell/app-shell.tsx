@@ -14,6 +14,7 @@ import { CommandPalette } from './command-palette';
 import { ToastProvider } from '@/components/ui/toast';
 import { ThemeToggle } from './theme-toggle';
 import { DemoBar, type DemoBarProps } from './demo-bar';
+import { DemoAccountSwitcher } from './demo-account-switcher';
 import { EmbedLinkPolicy } from './embed-link-policy';
 import { writePreferenceCookie } from '@/lib/preference-cookie';
 
@@ -215,6 +216,15 @@ export function AppShell({
             <ThemeToggle />
 
             <div className="ml-1 flex items-center gap-2 border-l border-line pl-2">
+              {demo ? (
+                // Démonstration : le compte devient un menu de changement d'utilisateur.
+                <DemoAccountSwitcher
+                  accounts={demo.accounts}
+                  currentRole={demo.currentRole}
+                  embed={demo.embed}
+                />
+              ) : (
+              <>
               <div className="hidden text-right xl:block">
                 <p className="text-[0.8125rem] leading-tight font-medium text-fg">{user.fullName}</p>
                 <p className="text-[0.6875rem] leading-tight text-fg-subtle">{user.roleLabel}</p>
@@ -225,8 +235,6 @@ export function AppShell({
               >
                 {initials(user.fullName)}
               </span>
-              {demo ? null : (
-              <>
               <Link
                 href="/mon-compte/notifications"
                 aria-label="Préférences de notification"

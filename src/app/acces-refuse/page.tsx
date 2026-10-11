@@ -4,7 +4,8 @@ import { ShieldAlert } from 'lucide-react';
 import { getCurrentUser } from '@/server/auth/session';
 import { buttonClass } from '@/components/ui/primitives';
 import { DemoBar } from '@/components/shell/demo-bar';
-import { DEMO_ROLES, isDemoMode } from '@/config/demo';
+import { isDemoMode } from '@/config/demo';
+import { listDemoAccounts } from '@/server/demo/accounts';
 import { currentDemoRole, isDemoEmbed } from '@/server/demo/identity';
 
 export const metadata: Metadata = { title: 'Accès refusé' };
@@ -15,7 +16,7 @@ export default async function AccessDeniedPage() {
   // la page où le visiteur a besoin de changer de point de vue.
   const demo = isDemoMode()
     ? {
-        roles: DEMO_ROLES.map(({ key, label }) => ({ key, label })),
+        accounts: await listDemoAccounts(),
         currentRole: await currentDemoRole(),
         embed: await isDemoEmbed(),
       }
@@ -23,7 +24,7 @@ export default async function AccessDeniedPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {demo ? <DemoBar {...demo} /> : null}
+      {demo ? <DemoBar {...demo} withSwitcher /> : null}
       <div className="flex flex-1 items-center justify-center px-6">
         <div className="w-full max-w-md rounded-[var(--radius-card)] border border-line bg-surface p-8 text-center shadow-[var(--shadow-card)]">
           <span className="mx-auto flex size-11 items-center justify-center rounded-full bg-warning-soft text-warning">
@@ -34,7 +35,7 @@ export default async function AccessDeniedPage() {
             Cette page n’est pas accessible avec le rôle
             {user ? ` « ${user.roleLabel} »` : ''}.{' '}
             {demo
-              ? 'Changez de point de vue dans le bandeau ci-dessus pour la consulter.'
+              ? 'Changez d’utilisateur en haut à droite pour la consulter.'
               : 'Si vous avez besoin de ce périmètre, demandez une extension de droits à la direction.'}
           </p>
           <Link href="/" className={buttonClass('secondary', 'md', 'mt-6')}>
