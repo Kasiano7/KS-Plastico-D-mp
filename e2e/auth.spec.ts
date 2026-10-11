@@ -13,7 +13,7 @@ test.describe('Authentification', () => {
   test('un mot de passe incorrect est refusé avec un message explicite', async ({ page }) => {
     await page.goto('/connexion');
     await page.getByLabel('Adresse e-mail').fill('direction@demo.example');
-    await page.getByLabel('Mot de passe').fill('mauvais-mot-de-passe');
+    await page.getByLabel('Mot de passe', { exact: true }).fill('mauvais-mot-de-passe');
     await page.getByRole('button', { name: 'Se connecter' }).click();
 
     await expect(page.getByRole('alert')).toBeVisible();

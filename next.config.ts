@@ -65,6 +65,10 @@ const nextConfig: NextConfig = {
   // version de Next.js/Turbopack corrige ce cas.
   serverExternalPackages: ['@electric-sql/pglite', 'pg', 'bcryptjs', 'exceljs'],
 
+  // Répertoire de build surchargeable : les tests e2e font tourner un second
+  // serveur (mode démonstration) en parallèle, qui ne doit pas partager `.next`.
+  distDir: process.env.NEXT_DIST_DIR || '.next',
+
   typedRoutes: false,
 
   experimental: {
